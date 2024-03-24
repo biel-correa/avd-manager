@@ -37,6 +37,10 @@ class ListAndroidDevices extends StatelessWidget {
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(snapshot.data![index]),
+                trailing: IconButton(
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: () => _startEmulator(snapshot.data![index]),
+                ),
               );
             },
           );
@@ -45,5 +49,9 @@ class ListAndroidDevices extends StatelessWidget {
         return const SizedBox();
       },
     );
+  }
+
+  void _startEmulator(String avd) {
+    EmulatorService().startEmulator(avd);
   }
 }

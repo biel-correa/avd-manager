@@ -22,6 +22,10 @@ class EmulatorService {
     return devices;
   }
 
+  void startEmulator(String avd) {
+    Process.run('$_androidHome/emulator/emulator', ['-avd', avd]);
+  }
+
   bool isAndroidHomeSet() {
     var result = Platform.environment['ANDROID_HOME'];
 
