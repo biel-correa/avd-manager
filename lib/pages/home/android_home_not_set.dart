@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AndroidHomeNotSet extends StatelessWidget {
-  const AndroidHomeNotSet({super.key});
+  final void Function()? retry;
+
+  const AndroidHomeNotSet({super.key, required this.retry});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,9 @@ class AndroidHomeNotSet extends StatelessWidget {
         children: [
           const Text('Android Home is not set'),
           const SizedBox(height: 16),
-          TextButton(onPressed: _redirect, child: const Text('Learn more'))
+          ElevatedButton(onPressed: _redirect, child: const Text('Learn more')),
+          const SizedBox(height: 6),
+          TextButton(onPressed: retry, child: const Text('Retry')),
         ],
       ),
     );

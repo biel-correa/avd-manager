@@ -26,11 +26,19 @@ class _HomePageState extends State<HomePage> {
           ? const Center(
               child: Text('Android Home is set'),
             )
-          : const AndroidHomeNotSet(),
+          : AndroidHomeNotSet(
+              retry: _retry,
+            ),
     );
   }
 
   Future<void> _debug() async {
     await EmulatorService().listAvds();
+  }
+
+  void _retry() {
+    setState(() {
+      _isAndroidHomeSet = EmulatorService().isAndroidHomeSet();
+    });
   }
 }
