@@ -32,14 +32,16 @@ class ListAndroidDevices extends StatelessWidget {
             );
           }
 
+          var devices = snapshot.data!;
+
           return ListView.builder(
-            itemCount: snapshot.data!.length,
+            itemCount: devices.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(snapshot.data![index]),
+                title: Text(devices[index]),
                 trailing: IconButton(
                   icon: const Icon(Icons.play_arrow),
-                  onPressed: () => _startEmulator(snapshot.data![index]),
+                  onPressed: () => _startEmulator(devices[index]),
                 ),
               );
             },
