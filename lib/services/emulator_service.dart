@@ -9,11 +9,28 @@ class EmulatorService {
 
   EmulatorService._internal();
 
-  Future<void> listAvds() async {}
+  String _androidHome = Platform.environment['ANDROID_HOME']!;
+
+  Future<List<String>> listAvds() async {
+    var result =
+        await Process.run('$_androidHome/emulator/emulator', ['-list-avds']);
+
+    var devices = result.stdout.toString().split('\n').where((element) {
+      return element.isNotEmpty;
+    }).toList();
+
+    return devices;
+  }
 
   bool isAndroidHomeSet() {
     var result = Platform.environment['ANDROID_HOME'];
 
-    return result == null ? false : result.isNotEmpty;
+    if (result == null) {
+      return false;
+    }
+
+    _androidHome = result;
+
+    return result.isNotEmpty;
   }
 }

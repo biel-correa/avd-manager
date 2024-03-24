@@ -1,4 +1,5 @@
 import 'package:avd_manager/pages/home/android_home_not_set.dart';
+import 'package:avd_manager/pages/home/list_android_devices.dart';
 import 'package:avd_manager/services/emulator_service.dart';
 import 'package:flutter/material.dart';
 
@@ -23,12 +24,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _isAndroidHomeSet
-          ? const Center(
-              child: Text('Android Home is set'),
-            )
-          : AndroidHomeNotSet(
-              retry: _retry,
-            ),
+          ? const ListAndroidDevices()
+          : AndroidHomeNotSet(retry: _retry),
     );
   }
 
