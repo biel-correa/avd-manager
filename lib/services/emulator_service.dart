@@ -9,9 +9,13 @@ class EmulatorService {
 
   EmulatorService._internal();
 
-  String _androidHome = Platform.environment['ANDROID_HOME']!;
+  String? _androidHome = Platform.environment['ANDROID_HOME'];
 
   Future<List<String>> listAvds() async {
+    if (_androidHome == null || _androidHome!.isEmpty) {
+      throw Exception('ANDROID_HOME is not set');
+    }
+
     var result =
         await Process.run('$_androidHome/emulator/emulator', ['-list-avds']);
 
@@ -23,6 +27,10 @@ class EmulatorService {
   }
 
   void startEmulator(String avd) {
+    if (_androidHome == null || _androidHome!.isEmpty) {
+      throw Exception('ANDROID_HOME is not set');
+    }
+
     Process.run('$_androidHome/emulator/emulator', ['-avd', avd]);
   }
 
