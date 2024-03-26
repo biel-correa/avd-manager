@@ -35,9 +35,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _isAndroidHomeSet
-          ? const ListAndroidDevices()
-          : AndroidHomeNotSet(retry: _retry),
+      body:
+          false ? const ListAndroidDevices() : AndroidHomeNotSet(retry: _retry),
     );
   }
 
