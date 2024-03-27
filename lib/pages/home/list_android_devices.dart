@@ -12,10 +12,16 @@ class ListAndroidDevices extends StatefulWidget {
 
 class _ListAndroidDevicesState extends State<ListAndroidDevices> {
   @override
+  void initState() {
+    super.initState();
+
+    EmulatorService().listAvds();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Watch(
       (context) {
-        EmulatorService().listAvds();
         var devices = EmulatorService().devices.value;
 
         if (devices == null) {

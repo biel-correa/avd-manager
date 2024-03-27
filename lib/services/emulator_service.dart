@@ -32,7 +32,7 @@ class EmulatorService {
       return element.isNotEmpty;
     }).toList();
 
-    this.devices.set(devices.map((e) => Device(name: e)).toList());
+    this.devices.value = devices.map((e) => Device(name: e)).toList();
   }
 
   Future<void> startEmulator(Device device) async {
@@ -57,7 +57,7 @@ class EmulatorService {
         }
       }
 
-      this.devices.set(devices);
+      this.devices.value = devices;
     } catch (e) {
       throw Exception('Failed to start emulator');
     }
@@ -82,7 +82,7 @@ class EmulatorService {
       }
     }
 
-    this.devices.set(devices);
+    this.devices.value = devices;
   }
 
   bool isAndroidHomeSet() {
