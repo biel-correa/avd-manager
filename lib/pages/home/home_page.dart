@@ -1,4 +1,3 @@
-import 'package:avd_manager/pages/home/android_home_not_set.dart';
 import 'package:avd_manager/pages/home/list_android_devices.dart';
 import 'package:avd_manager/services/emulator_service.dart';
 import 'package:flutter/material.dart';
@@ -12,15 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isAndroidHomeSet = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _isAndroidHomeSet = EmulatorService().isAndroidHomeSet();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,16 +25,19 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _isAndroidHomeSet
-          ? const ListAndroidDevices()
-          : AndroidHomeNotSet(retry: _retry),
-    );
-  }
+      body: FutureBuilder(
+        future: EmulatorService().initialize(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-  void _retry() {
-    setState(() {
-      _isAndroidHomeSet = EmulatorService().isAndroidHomeSet();
-    });
+          return const ListAndroidDevices();
+        },
+      ),
+    );
   }
 
   void _reportBug() {

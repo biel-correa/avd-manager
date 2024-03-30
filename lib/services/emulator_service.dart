@@ -1,6 +1,5 @@
-import 'dart:io';
-import 'package:avd_manager/models/device.dart';
-import 'package:path/path.dart' as p;
+import 'package:emulators/emulators.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:signals/signals.dart';
 
 class EmulatorService {
@@ -12,88 +11,31 @@ class EmulatorService {
 
   EmulatorService._internal();
 
-  String? _androidHome = Platform.environment['ANDROID_HOME'];
-  String get _emulatorPath => p.join(_androidHome!, 'emulator', 'emulator');
-  Signal<List<Device>?> devices = signal(null);
+  Signal<IList<Device>?> devices = signal(null);
+  late Emulators emulators;
+
+  Future<void> initialize() async {
+    emulators = await Emulators.build();
+  }
 
   Future<void> listAvds() async {
-    if (_androidHome == null || _androidHome!.isEmpty) {
-      throw Exception('ANDROID_HOME is not set');
-    }
+    var allDevices = await emulators.list();
+    var runningDevices = await emulators.running();
+    var devices = IList<Device>();
 
-    var result = await Process.run(_emulatorPath, ['-list-avds']);
+    for (var device in allDevices) {
+      var runningDevice = runningDevices
+          .where((d) => d.state.name == device.state.name)
+          .firstOrNull;
 
-    var devices = result.stdout.toString().split('\n').where((element) {
-      var regex = RegExp(r'^INFO\s+\|');
-      if (regex.hasMatch(element)) {
-        return false;
+      if (runningDevice != null) {
+        devices = devices.add(runningDevice);
+        continue;
       }
 
-      return element.isNotEmpty;
-    }).toList();
-
-    this.devices.value = devices.map((e) => Device(name: e)).toList();
-  }
-
-  Future<void> startEmulator(Device device) async {
-    if (_androidHome == null || _androidHome!.isEmpty) {
-      throw Exception('ANDROID_HOME is not set');
-    }
-
-    try {
-      var result = await Process.start(_emulatorPath, ['-avd', device.name]);
-
-      device.processId = result.pid;
-
-      var devices = this.devices.value;
-
-      if (devices == null) {
-        throw Exception('No devices found');
-      }
-
-      for (var element in devices) {
-        if (element.name == device.name) {
-          element.processId = device.processId;
-        }
-      }
-
-      this.devices.value = devices;
-    } catch (e) {
-      throw Exception('Failed to start emulator');
-    }
-  }
-
-  stopEmulator(Device device) {
-    if (device.processId == null) {
-      throw Exception('Emulator is not running');
-    }
-
-    Process.killPid(device.processId!);
-
-    var devices = this.devices.value;
-
-    if (devices == null) {
-      throw Exception('No devices found');
-    }
-
-    for (var element in devices) {
-      if (element.name == device.name) {
-        element.processId = null;
-      }
+      devices = devices.add(device);
     }
 
     this.devices.value = devices;
-  }
-
-  bool isAndroidHomeSet() {
-    var result = Platform.environment['ANDROID_HOME'];
-
-    if (result == null) {
-      return false;
-    }
-
-    _androidHome = result;
-
-    return result.isNotEmpty;
   }
 }
